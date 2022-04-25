@@ -9,6 +9,12 @@ cat << EOM >> /etc/pacman.conf
 Include = /etc/pacman.d/mirrorlist
 EOM
 
+# Add alerque repository for yay
+cat << EOM >> /etc/pacman.conf
+[alerque]
+Server = https://arch.alerque.com/\$arch
+EOM
+
 pacman -Syu --noconfirm --needed base-devel
 
 # Makepkg does not allow running as root
@@ -36,12 +42,7 @@ fi
 # Optionally install dependencies from AUR
 if [ -n "${INPUT_AURDEPS:-}" ]; then
 	# First install yay
-	pacman -S --noconfirm --needed git
-	git clone https://aur.archlinux.org/yay.git /tmp/yay
-	pushd /tmp/yay
-	chmod -R a+rw .
-	sudo -H -u builder makepkg --syncdeps --install --noconfirm
-	popd
+	pacman -S yay
 
 	# Extract dependencies from .SRCINFO (depends or depends_x86_64) and install
 	mapfile -t PKGDEPS < \
